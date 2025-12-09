@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:geolocator/geolocator.dart';
+import 'package:geocoding/geocoding.dart';
 import '../theme.dart';
 import '../widgets/bubble_tag.dart';
 
@@ -11,8 +12,8 @@ class InputPage extends StatefulWidget {
 }
 
 class _InputPageState extends State<InputPage> {
-  final List<String> tasteTags = ['Asin', 'Pedas', 'Manis', 'Gurih', 'Segar'];
-  final List<String> styleTags = ['Berkuah', 'Kering', 'Pakai Nasi'];
+  final List<String> tasteTags = ['Asin', 'Pedas', 'Manis', 'Gurih', 'Segar', 'Bingung'];
+  final List<String> styleTags = ['Berkuah', 'Kering', 'Pakai Nasi', 'Bingung'];
   final List<String> weatherOptions = [
     'Cerah',
     'Mendung',
@@ -28,12 +29,14 @@ class _InputPageState extends State<InputPage> {
   // Controller untuk preferensi personal
   final TextEditingController _allergiesController = TextEditingController();
   final TextEditingController _likesController = TextEditingController();
+  final TextEditingController _budgetController = TextEditingController();
 
   // State untuk fitur lokasi
   bool _useLocation = false;
   bool _isGettingLocation = false;
   Position? _currentPosition;
   String _locationMessage = 'Aktifkan untuk rekomendasi sekitar';
+  String? _locationName;
 
   /// Meminta izin dan mendapatkan lokasi pengguna
   Future<void> _getCurrentLocation() async {
@@ -69,11 +72,51 @@ class _InputPageState extends State<InputPage> {
         desiredAccuracy: LocationAccuracy.high,
       );
       
-      setState(() {
-        _currentPosition = position;
-        _isGettingLocation = false;
-        _locationMessage = 'Lokasi ditemukan!';
-      });
+      // Reverse geocoding untuk mendapatkan nama lokasi
+      try {
+        List<Placemark> placemarks = await placemarkFromCoordinates(
+          position.latitude,
+          position.longitude,
+        );
+        
+        if (placemarks.isNotEmpty) {
+          Placemark place = placemarks[0];
+          String locationName = '';
+          
+          if (place.subLocality != null && place.subLocality!.isNotEmpty) {
+            locationName = place.subLocality!;
+          } else if (place.locality != null && place.locality!.isNotEmpty) {
+            locationName = place.locality!;
+          }
+          
+          if (place.subAdministrativeArea != null && place.subAdministrativeArea!.isNotEmpty) {
+            locationName += ', ${place.subAdministrativeArea}';
+          } else if (place.administrativeArea != null && place.administrativeArea!.isNotEmpty) {
+            locationName += ', ${place.administrativeArea}';
+          }
+          
+          setState(() {
+            _currentPosition = position;
+            _isGettingLocation = false;
+            _locationName = locationName.isNotEmpty ? locationName : null;
+            _locationMessage = _locationName ?? 'Lokasi ditemukan';
+          });
+        } else {
+          setState(() {
+            _currentPosition = position;
+            _isGettingLocation = false;
+            _locationName = null;
+            _locationMessage = 'Lokasi ditemukan';
+          });
+        }
+      } catch (e) {
+        setState(() {
+          _currentPosition = position;
+          _isGettingLocation = false;
+          _locationName = null;
+          _locationMessage = 'Lokasi ditemukan';
+        });
+      }
 
     } catch (e) {
       setState(() {
@@ -89,7 +132,7 @@ class _InputPageState extends State<InputPage> {
     return Scaffold(
       backgroundColor: AppTheme.white,
       appBar: AppBar(
-        title: const Text('Cari Rekomendasi'),
+        title: const Text('Mau Makan Apa Nih?'),
         backgroundColor: AppTheme.white,
         elevation: 0,
         foregroundColor: AppTheme.black,
@@ -101,12 +144,12 @@ class _InputPageState extends State<InputPage> {
           children: [
             // Rasa
             Text(
-              'Rasa Pilihan',
+              'Lagi Pengen Rasa Apa? 😋',
               style: AppTheme.headingSmall,
             ),
             const SizedBox(height: 12),
             Text(
-              'Pilih satu atau lebih rasa yang kamu inginkan',
+              'Pilih aja yang kamu pengen, boleh lebih dari satu kok!',
               style: AppTheme.bodySmall,
             ),
             const SizedBox(height: 16),
@@ -133,12 +176,12 @@ class _InputPageState extends State<InputPage> {
 
             // Gaya
             Text(
-              'Gaya Makan',
+              'Vibes Makannya Gimana? 🍴',
               style: AppTheme.headingSmall,
             ),
             const SizedBox(height: 12),
             Text(
-              'Pilih satu atau lebih gaya makan',
+              'Mau santai atau formal? Pilih yang sesuai mood!',
               style: AppTheme.bodySmall,
             ),
             const SizedBox(height: 16),
@@ -211,6 +254,37 @@ class _InputPageState extends State<InputPage> {
             ),
             const SizedBox(height: 32),
 
+            // Budget Section
+            Text(
+              'Budget Makan',
+              style: AppTheme.headingSmall,
+            ),
+            const SizedBox(height: 8),
+            Text(
+              'Masukkan budget untuk rekomendasi yang sesuai',
+              style: AppTheme.bodySmall,
+            ),
+            const SizedBox(height: 16),
+            
+            TextField(
+              controller: _budgetController,
+              decoration: InputDecoration(
+                labelText: 'Budget (Rp)',
+                prefixText: 'Rp ',
+                hintText: 'Contoh: 25000',
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                focusedBorder: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(12),
+                  borderSide: const BorderSide(color: AppTheme.primaryOrange, width: 2),
+                ),
+              ),
+              keyboardType: TextInputType.number,
+            ),
+            
+            const SizedBox(height: 24),
+
             // Preferensi Personal (Alergi & Kesukaan)
             Text(
               'Preferensi Personal',
@@ -260,6 +334,11 @@ class _InputPageState extends State<InputPage> {
               'Gunakan Lokasi Terkini',
               style: AppTheme.headingSmall,
             ),
+            const SizedBox(height: 8),
+            Text(
+              'Rekomendasi dalam radius 10 km dari lokasimu',
+              style: AppTheme.bodySmall,
+            ),
             const SizedBox(height: 12),
             Container(
               padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
@@ -271,11 +350,26 @@ class _InputPageState extends State<InputPage> {
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   Expanded(
-                    child: Text(
-                      _locationMessage,
-                      style: AppTheme.bodySmall.copyWith(
-                        color: _useLocation ? AppTheme.black : AppTheme.darkGray,
-                      ),
+                    child: Row(
+                      children: [
+                        if (_isGettingLocation)
+                          const Padding(
+                            padding: EdgeInsets.only(right: 8.0),
+                            child: SizedBox(
+                              width: 12,
+                              height: 12,
+                              child: CircularProgressIndicator(strokeWidth: 2),
+                            ),
+                          ),
+                        Expanded(
+                          child: Text(
+                            _locationMessage,
+                            style: AppTheme.bodySmall.copyWith(
+                              color: _useLocation ? AppTheme.black : AppTheme.darkGray,
+                            ),
+                          ),
+                        ),
+                      ],
                     ),
                   ),
                   Switch(
@@ -287,15 +381,49 @@ class _InputPageState extends State<InputPage> {
                           _getCurrentLocation();
                         } else {
                           _currentPosition = null;
+                          _locationName = null;
                           _locationMessage = 'Aktifkan untuk rekomendasi sekitar';
                         }
                       });
                     },
-                    activeColor: AppTheme.primaryOrange,
+                    activeThumbColor: AppTheme.primaryOrange,
                   ),
                 ],
               ),
             ),
+            if (_useLocation && _locationName != null)
+              Padding(
+                padding: const EdgeInsets.only(top: 12),
+                child: Container(
+                  padding: const EdgeInsets.all(12),
+                  decoration: BoxDecoration(
+                    color: AppTheme.primaryOrange.withOpacity(0.1),
+                    borderRadius: BorderRadius.circular(12),
+                    border: Border.all(
+                      color: AppTheme.primaryOrange.withOpacity(0.3),
+                    ),
+                  ),
+                  child: Row(
+                    children: [
+                      const Icon(
+                        Icons.location_on,
+                        color: AppTheme.primaryOrange,
+                        size: 20,
+                      ),
+                      const SizedBox(width: 8),
+                      Expanded(
+                        child: Text(
+                          _locationName!,
+                          style: AppTheme.bodyMedium.copyWith(
+                            color: AppTheme.primaryOrange,
+                            fontWeight: FontWeight.w600,
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
             const SizedBox(height: 48),
 
             // Button
@@ -308,14 +436,15 @@ class _InputPageState extends State<InputPage> {
                           context,
                           '/reasoning',
                           arguments: {
-                            'taste':
-                                selectedTastes.join(', '),
-                            'style':
-                                selectedStyles.join(', '),
+                            'taste': selectedTastes.join(', '),
+                            'style': selectedStyles.join(', '),
                             'weather': selectedWeather,
-                            'position': _currentPosition, // Kirim data posisi
+                            'position': _currentPosition,
+                            'locationName': _locationName,
+                            'maxDistance': 10.0, // 10 km radius
                             'allergies': _allergiesController.text,
                             'likes': _likesController.text,
+                            'budget': _budgetController.text,
                           },
                         );
                       }
@@ -330,7 +459,7 @@ class _InputPageState extends State<InputPage> {
                   ),
                 ),
                 child: const Text(
-                  'Cari Rekomendasi',
+                  'Cari Makanannya Dong!',
                   style: AppTheme.buttonText,
                 ),
               ),

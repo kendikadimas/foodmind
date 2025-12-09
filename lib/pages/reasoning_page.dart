@@ -12,6 +12,8 @@ class ReasoningPage extends StatefulWidget {
   final Position? position;
   final String allergies;
   final String likes;
+  final String budget;
+  final String healthConditions;
 
   const ReasoningPage({
     super.key,
@@ -21,6 +23,8 @@ class ReasoningPage extends StatefulWidget {
     this.position,
     required this.allergies,
     required this.likes,
+    this.budget = '',
+    this.healthConditions = '',
   });
 
   @override
@@ -38,8 +42,8 @@ class _ReasoningPageState extends State<ReasoningPage> {
       style: widget.style,
       weather: widget.weather,
       position: widget.position,
-      allergies: widget.allergies,
-      likes: widget.likes,
+      allergies: widget.allergies + (widget.healthConditions.isNotEmpty ? '. Kondisi kesehatan: ${widget.healthConditions}' : ''),
+      likes: widget.likes + (widget.budget.isNotEmpty ? '. Budget: Rp ${widget.budget}' : ''),
     );
   }
 

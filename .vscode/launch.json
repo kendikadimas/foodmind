@@ -1,0 +1,49 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "name": "Flutter (Chrome - Dev)",
+      "request": "launch",
+      "type": "dart",
+      "program": "lib/main.dart",
+      "args": [
+        "--dart-define-from-file=dart-defines.json",
+        "-d",
+        "chrome",
+        "--web-browser-flag=--disable-web-security"
+      ]
+    },
+    {
+      "name": "Flutter (Chrome - Production)",
+      "request": "launch",
+      "type": "dart",
+      "program": "lib/main.dart",
+      "args": [
+        "--dart-define-from-file=dart-defines.json",
+        "-d",
+        "chrome"
+      ]
+    },
+    {
+      "name": "Flutter (Edge - Dev)",
+      "request": "launch",
+      "type": "dart",
+      "program": "lib/main.dart",
+      "args": [
+        "--dart-define-from-file=dart-defines.json",
+        "-d",
+        "edge",
+        "--web-browser-flag=--disable-web-security"
+      ]
+    },
+    {
+      "name": "Flutter (Android)",
+      "request": "launch",
+      "type": "dart",
+      "program": "lib/main.dart",
+      "args": [
+        "--dart-define-from-file=dart-defines.json"
+      ]
+    }
+  ]
+}

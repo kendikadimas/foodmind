@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 
 // ignore_for_file: deprecated_member_use
 
@@ -16,42 +17,49 @@ class AppTheme {
     fontSize: 32,
     fontWeight: FontWeight.bold,
     color: black,
+    fontFamily: 'Poppins',
   );
 
   static const TextStyle headingMedium = TextStyle(
     fontSize: 24,
     fontWeight: FontWeight.bold,
     color: black,
+    fontFamily: 'Poppins',
   );
 
   static const TextStyle headingSmall = TextStyle(
     fontSize: 18,
     fontWeight: FontWeight.w600,
     color: black,
+    fontFamily: 'Poppins',
   );
 
   static const TextStyle bodyLarge = TextStyle(
     fontSize: 16,
     fontWeight: FontWeight.w500,
     color: black,
+    fontFamily: 'Poppins',
   );
 
   static const TextStyle bodyMedium = TextStyle(
     fontSize: 14,
     fontWeight: FontWeight.w400,
     color: darkGray,
+    fontFamily: 'Poppins',
   );
 
   static const TextStyle bodySmall = TextStyle(
     fontSize: 12,
     fontWeight: FontWeight.w400,
     color: mediumGray,
+    fontFamily: 'Poppins',
   );
 
   static const TextStyle buttonText = TextStyle(
     fontSize: 16,
     fontWeight: FontWeight.w600,
     color: white,
+    fontFamily: 'Poppins',
   );
 
   // Theme Data
@@ -59,11 +67,12 @@ class AppTheme {
     useMaterial3: true,
     primaryColor: primaryOrange,
     scaffoldBackgroundColor: white,
-    appBarTheme: const AppBarTheme(
+    textTheme: GoogleFonts.poppinsTextTheme(),
+    appBarTheme: AppBarTheme(
       backgroundColor: white,
       elevation: 0,
-      iconTheme: IconThemeData(color: black),
-      titleTextStyle: TextStyle(
+      iconTheme: const IconThemeData(color: black),
+      titleTextStyle: GoogleFonts.poppins(
         color: black,
         fontSize: 20,
         fontWeight: FontWeight.bold,
@@ -84,6 +93,7 @@ class AppTheme {
         textStyle: const TextStyle(
           fontSize: 16,
           fontWeight: FontWeight.w600,
+          fontFamily: 'Poppins',
         ),
       ),
     ),
@@ -98,6 +108,7 @@ class AppTheme {
         textStyle: const TextStyle(
           fontSize: 16,
           fontWeight: FontWeight.w600,
+          fontFamily: 'Poppins',
         ),
       ),
     ),

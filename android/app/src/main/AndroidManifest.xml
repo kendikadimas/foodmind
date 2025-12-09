@@ -1,6 +1,6 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android">
     <application
-        android:label="foodminduas"
+        android:label="FoodMind"
         android:name="${applicationName}"
         android:icon="@mipmap/ic_launcher">
         <activity
@@ -23,6 +23,26 @@
             <intent-filter>
                 <action android:name="android.intent.action.MAIN"/>
                 <category android:name="android.intent.category.LAUNCHER"/>
+            </intent-filter>
+            
+            <!-- Deep Links for Supabase Auth -->
+            <intent-filter android:autoVerify="true">
+                <action android:name="android.intent.action.VIEW" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+                <!-- Replace with your Supabase project URL -->
+                <data
+                    android:scheme="https"
+                    android:host="yzlemkwmqzatcawvslyf.supabase.co"
+                    android:pathPrefix="/auth/v1/callback" />
+            </intent-filter>
+            
+            <!-- Custom scheme untuk fallback -->
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+                <data android:scheme="com.foodmind" />
             </intent-filter>
         </activity>
         <!-- Don't delete the meta-data below.
