@@ -1,16 +1,17 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import '../theme.dart';
 import '../models/user_profile.dart';
 
-class OnboardingPreferencesPage extends StatefulWidget {
+class OnboardingPreferencesPage extends ConsumerStatefulWidget {
   const OnboardingPreferencesPage({super.key});
 
   @override
-  State<OnboardingPreferencesPage> createState() => _OnboardingPreferencesPageState();
+  ConsumerState<OnboardingPreferencesPage> createState() => _OnboardingPreferencesPageState();
 }
 
-class _OnboardingPreferencesPageState extends State<OnboardingPreferencesPage> {
+class _OnboardingPreferencesPageState extends ConsumerState<OnboardingPreferencesPage> {
   final PageController _pageController = PageController();
   int _currentPage = 0;
   

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:foodmind/pages/main_scaffold.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:hive_flutter/hive_flutter.dart';
@@ -33,7 +34,7 @@ Future<void> main() async {
   await Hive.openBox<UserProfile>('userProfile');
   await Hive.openBox<CommunityPost>('communityPosts');
   
-  runApp(const MyApp());
+  runApp(const ProviderScope(child: MyApp()));
 }
 
 class MyApp extends StatelessWidget {

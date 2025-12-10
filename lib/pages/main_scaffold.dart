@@ -1,18 +1,19 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:foodmind/pages/home_page.dart';
 import 'package:foodmind/pages/input_page.dart';
 import 'package:foodmind/pages/community_page.dart';
 import 'package:foodmind/pages/profile_page.dart';
 import 'package:foodmind/theme.dart';
 
-class MainScaffold extends StatefulWidget {
+class MainScaffold extends ConsumerStatefulWidget {
   const MainScaffold({super.key});
 
   @override
-  State<MainScaffold> createState() => _MainScaffoldState();
+  ConsumerState<MainScaffold> createState() => _MainScaffoldState();
 }
 
-class _MainScaffoldState extends State<MainScaffold> with SingleTickerProviderStateMixin {
+class _MainScaffoldState extends ConsumerState<MainScaffold> with SingleTickerProviderStateMixin {
   late TabController _tabController;
 
   @override

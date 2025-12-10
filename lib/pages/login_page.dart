@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import '../theme.dart';
-import '../services/auth_service.dart';
+import '../providers/service_providers.dart';
 
-class LoginPage extends StatefulWidget {
+class LoginPage extends ConsumerStatefulWidget {
   final bool isRequired;
   final String? redirectRoute;
 
@@ -14,15 +15,14 @@ class LoginPage extends StatefulWidget {
   });
 
   @override
-  State<LoginPage> createState() => _LoginPageState();
+  ConsumerState<LoginPage> createState() => _LoginPageState();
 }
 
-class _LoginPageState extends State<LoginPage> {
+class _LoginPageState extends ConsumerState<LoginPage> {
   final _formKey = GlobalKey<FormState>();
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
   final _nameController = TextEditingController();
-  final _authService = AuthService();
   
   bool _isLoading = false;
   bool _isLoginMode = true; // true = login, false = register
@@ -33,16 +33,18 @@ class _LoginPageState extends State<LoginPage> {
 
     setState(() => _isLoading = true);
 
+    final authService = ref.read(authServiceProvider);
+
     try {
       if (_isLoginMode) {
         // Login
-        await _authService.signInWithEmailPassword(
+        await authService.signInWithEmailPassword(
           email: _emailController.text.trim(),
           password: _passwordController.text.trim(),
         );
       } else {
         // Register
-        await _authService.signUpWithEmailPassword(
+        await authService.signUpWithEmailPassword(
           email: _emailController.text.trim(),
           password: _passwordController.text.trim(),
           name: _nameController.text.trim(),
@@ -71,8 +73,10 @@ class _LoginPageState extends State<LoginPage> {
   Future<void> _handleGoogleSignIn() async {
     setState(() => _isLoading = true);
 
+    final authService = ref.read(authServiceProvider);
+
     try {
-      final result = await _authService.signInWithGoogle();
+      final result = await authService.signInWithGoogle();
       
       if (result != null && mounted) {
         await _handleSuccessfulAuth();

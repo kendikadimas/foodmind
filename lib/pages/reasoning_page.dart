@@ -1,11 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'dart:async';
 import 'package:geolocator/geolocator.dart';
 import '../theme.dart';
 import '../services/openai_service.dart';
 import 'result_page.dart';
 
-class ReasoningPage extends StatefulWidget {
+class ReasoningPage extends ConsumerStatefulWidget {
   final String taste;
   final String style;
   final String weather;
@@ -28,10 +29,10 @@ class ReasoningPage extends StatefulWidget {
   });
 
   @override
-  State<ReasoningPage> createState() => _ReasoningPageState();
+  ConsumerState<ReasoningPage> createState() => _ReasoningPageState();
 }
 
-class _ReasoningPageState extends State<ReasoningPage> {
+class _ReasoningPageState extends ConsumerState<ReasoningPage> {
   late Future<Map<String, dynamic>> _foodRecommendation;
 
   @override

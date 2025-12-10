@@ -1,26 +1,24 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import '../theme.dart';
 import '../models/user_profile.dart';
 import '../models/food_history.dart';
-import '../services/auth_service.dart';
-import '../services/user_database_service.dart';
+import '../providers/service_providers.dart';
 
-class ProfilePage extends StatefulWidget {
+class ProfilePage extends ConsumerStatefulWidget {
   const ProfilePage({super.key});
 
   @override
-  State<ProfilePage> createState() => _ProfilePageState();
+  ConsumerState<ProfilePage> createState() => _ProfilePageState();
 }
 
-class _ProfilePageState extends State<ProfilePage> {
+class _ProfilePageState extends ConsumerState<ProfilePage> {
   final _formKey = GlobalKey<FormState>();
   final _nameController = TextEditingController();
   final _emailController = TextEditingController();
   final _phoneController = TextEditingController();
   final _budgetController = TextEditingController();
-  final _authService = AuthService();
-  final _userDb = UserDatabaseService();
   
   List<String> selectedAllergies = [];
   List<String> selectedMedicalConditions = [];
@@ -84,7 +82,7 @@ class _ProfilePageState extends State<ProfilePage> {
         await box.add(profile);
 
         // Save to Firestore (cloud)
-        await _userDb.saveUserProfile(profile);
+        await ref.read(userDatabaseServiceProvider).saveUserProfile(profile);
 
         setState(() {
           currentUser = profile;
@@ -115,7 +113,7 @@ class _ProfilePageState extends State<ProfilePage> {
   Future<void> _logout() async {
     try {
       // Logout from Firebase
-      await _authService.signOut();
+      await ref.read(authServiceProvider).signOut();
       
       // Clear Hive data
       final box = await Hive.openBox<UserProfile>('userProfile');

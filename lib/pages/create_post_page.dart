@@ -1,23 +1,23 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import '../theme.dart';
 import '../models/community_post.dart';
 import '../models/user_profile.dart';
-import '../services/post_database_service.dart';
+import '../providers/service_providers.dart';
 
-class CreatePostPage extends StatefulWidget {
+class CreatePostPage extends ConsumerStatefulWidget {
   const CreatePostPage({super.key});
 
   @override
-  State<CreatePostPage> createState() => _CreatePostPageState();
+  ConsumerState<CreatePostPage> createState() => _CreatePostPageState();
 }
 
-class _CreatePostPageState extends State<CreatePostPage> {
+class _CreatePostPageState extends ConsumerState<CreatePostPage> {
   final _formKey = GlobalKey<FormState>();
   final _contentController = TextEditingController();
   final _locationController = TextEditingController();
   final _budgetController = TextEditingController();
-  final PostDatabaseService _postDb = PostDatabaseService();
   
   UserProfile? currentUser;
   Set<String> selectedAllergies = {};
@@ -92,7 +92,7 @@ class _CreatePostPageState extends State<CreatePostPage> {
       );
 
       // Save to Supabase
-      await _postDb.createPost(post);
+      await ref.read(postDatabaseServiceProvider).createPost(post);
 
       if (mounted) {
         Navigator.pop(context, true);

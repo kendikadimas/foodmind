@@ -1,11 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import '../theme.dart';
 import '../models/food_history.dart';
 import '../services/openai_service.dart';
 
-class ResultPage extends StatefulWidget {
+class ResultPage extends ConsumerStatefulWidget {
   final Map<String, dynamic> foodData;
   final Map<String, dynamic>? locationInfo;
 
@@ -16,10 +17,10 @@ class ResultPage extends StatefulWidget {
   });
 
   @override
-  State<ResultPage> createState() => _ResultPageState();
+  ConsumerState<ResultPage> createState() => _ResultPageState();
 }
 
-class _ResultPageState extends State<ResultPage> {
+class _ResultPageState extends ConsumerState<ResultPage> {
   late String mainFood;
   late List<dynamic> alternatives;
   late List<dynamic> reasoning;

@@ -1,17 +1,18 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:geocoding/geocoding.dart';
 import '../theme.dart';
 import '../widgets/bubble_tag.dart';
 
-class InputPage extends StatefulWidget {
+class InputPage extends ConsumerStatefulWidget {
   const InputPage({super.key});
 
   @override
-  State<InputPage> createState() => _InputPageState();
+  ConsumerState<InputPage> createState() => _InputPageState();
 }
 
-class _InputPageState extends State<InputPage> {
+class _InputPageState extends ConsumerState<InputPage> {
   final List<String> tasteTags = ['Asin', 'Pedas', 'Manis', 'Gurih', 'Segar', 'Bingung'];
   final List<String> styleTags = ['Berkuah', 'Kering', 'Pakai Nasi', 'Bingung'];
   final List<String> weatherOptions = [

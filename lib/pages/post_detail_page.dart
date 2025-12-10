@@ -1,26 +1,26 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import '../theme.dart';
 import '../models/community_post.dart';
 import '../models/user_profile.dart';
-import '../services/post_database_service.dart';
+import '../providers/service_providers.dart';
 
-class PostDetailPage extends StatefulWidget {
+class PostDetailPage extends ConsumerStatefulWidget {
   final CommunityPost post;
   final String postId;
 
   const PostDetailPage({super.key, required this.post, required this.postId});
 
   @override
-  State<PostDetailPage> createState() => _PostDetailPageState();
+  ConsumerState<PostDetailPage> createState() => _PostDetailPageState();
 }
 
-class _PostDetailPageState extends State<PostDetailPage> {
+class _PostDetailPageState extends ConsumerState<PostDetailPage> {
   final _replyController = TextEditingController();
   final _restaurantController = TextEditingController();
   final _priceController = TextEditingController();
   final _formKey = GlobalKey<FormState>();
-  final PostDatabaseService _postDb = PostDatabaseService();
   
   UserProfile? currentUser;
   bool isSubmittingReply = false;
@@ -63,7 +63,7 @@ class _PostDetailPageState extends State<PostDetailPage> {
       );
 
       // Add to Firestore
-      await _postDb.addResponse(widget.postId, response);
+      await ref.read(postDatabaseServiceProvider).addResponse(widget.postId, response);
 
       // Add to local state
       setState(() {
@@ -602,7 +602,7 @@ class _PostDetailPageState extends State<PostDetailPage> {
       final isLiked = widget.post.isLikedBy(currentUser!.email!);
       
       // Update Firestore
-      await _postDb.toggleLike(widget.postId, isLiked);
+      await ref.read(postDatabaseServiceProvider).toggleLike(widget.postId, isLiked);
       
       // Update local state
       setState(() {
@@ -637,7 +637,7 @@ class _PostDetailPageState extends State<PostDetailPage> {
       });
       
       // Update Firestore with full post data
-      await _postDb.updatePost(widget.postId, widget.post);
+      await ref.read(postDatabaseServiceProvider).updatePost(widget.postId, widget.post);
     } catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(

@@ -1,21 +1,21 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import '../theme.dart';
 import '../models/community_post.dart';
 import '../models/user_profile.dart';
-import '../services/post_database_service.dart';
+import '../providers/service_providers.dart';
 import 'create_post_page.dart';
 import 'post_detail_page.dart';
 
-class CommunityPage extends StatefulWidget {
+class CommunityPage extends ConsumerStatefulWidget {
   const CommunityPage({super.key});
 
   @override
-  State<CommunityPage> createState() => _CommunityPageState();
+  ConsumerState<CommunityPage> createState() => _CommunityPageState();
 }
 
-class _CommunityPageState extends State<CommunityPage> {
-  final PostDatabaseService _postDb = PostDatabaseService();
+class _CommunityPageState extends ConsumerState<CommunityPage> {
   Box<UserProfile>? userBox;
   UserProfile? currentUser;
   bool isLoading = true;
@@ -121,7 +121,7 @@ class _CommunityPageState extends State<CommunityPage> {
         ],
       ),
       body: StreamBuilder<List<Map<String, dynamic>>>(
-        stream: _postDb.streamAllPosts(),
+        stream: ref.read(postDatabaseServiceProvider).streamAllPosts(),
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting && !snapshot.hasData) {
             return const Center(child: CircularProgressIndicator());
@@ -139,6 +139,7 @@ class _CommunityPageState extends State<CommunityPage> {
             return _buildEmptyState();
           }
 
+          final postDb = ref.read(postDatabaseServiceProvider);
           return RefreshIndicator(
             onRefresh: _refreshPosts,
             child: ListView.separated(
@@ -147,7 +148,7 @@ class _CommunityPageState extends State<CommunityPage> {
               separatorBuilder: (context, index) => const SizedBox(height: 16),
               itemBuilder: (context, index) {
                 final postData = posts[index];
-                final post = _postDb.postFromSupabase(postData);
+                final post = postDb.postFromSupabase(postData);
                 return _buildPostCard(post, postData['id'].toString());
               },
             ),
