@@ -11,14 +11,20 @@ class UserDatabaseService {
   // Create or update user profile in Supabase
   Future<void> saveUserProfile(UserProfile profile) async {
     if (currentUserId == null) {
+      print('❌ Cannot save profile: User not logged in (currentUserId is null)');
       throw 'User belum login';
     }
 
+    await saveUserProfileWithId(profile, currentUserId!);
+  }
+
+  // Create or update user profile with explicit user ID
+  Future<void> saveUserProfileWithId(UserProfile profile, String userId) async {
     try {
       final now = DateTime.now().toIso8601String();
       
-      await _supabase.client.from('users').upsert({
-        'id': currentUserId,
+      final data = {
+        'id': userId,
         'name': profile.name,
         'email': profile.email,
         'phone': profile.phone,
@@ -28,8 +34,22 @@ class UserDatabaseService {
         'food_preferences': profile.foodPreferences,
         'is_premium': profile.isPremium,
         'updated_at': now,
-      });
+      };
+      
+      print('📤 Upserting user profile to Supabase table "users"...');
+      print('   User ID: $userId');
+      print('   Data: ${data.toString().substring(0, 100)}...');
+      
+      await _supabase.client.from('users').upsert(data);
+      
+      print('✅ Profile upserted successfully to Supabase!');
     } catch (e) {
+      print('❌ Failed to save profile to Supabase: $e');
+      print('⚠️ Possible reasons:');
+      print('   1. Table "users" does not exist');
+      print('   2. RLS policy blocking the insert');
+      print('   3. Column mismatch or data type error');
+      print('   4. Network connection issue');
       throw 'Gagal menyimpan profil: $e';
     }
   }

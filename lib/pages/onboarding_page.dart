@@ -32,41 +32,32 @@ class _OnboardingPageState extends State<OnboardingPage>
     return Scaffold(
       backgroundColor: AppTheme.white,
       body: SafeArea(
-        child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 32),
+        child: SingleChildScrollView(
+          padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
           child: Column(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Expanded(
-                child: SingleChildScrollView(
-                  child: Column(
-                    children: [
-                      const SizedBox(height: 48),
-                      _buildCard(
-                        0,
-                        '🍽️',
-                        'Laper Tapi Bingung?',
-                        'Tenang aja! FoodMind bantuin kamu nemuin\nmakanan yang pas banget buat mood hari ini.',
-                      ),
-                      const SizedBox(height: 24),
-                      _buildCard(
-                        1,
-                        '🧠',
-                        'AI yang Ngerti Kamu',
-                        'Powered by OpenAI yang cerdas dan bisa\nanalisa preferensi & budget kamu dengan akurat.',
-                      ),
-                      const SizedBox(height: 24),
-                      _buildCard(
-                        2,
-                        '💾',
-                        'Auto Save Riwayat',
-                        'Semua rekomendasi otomatis kesimpen di HP kamu.\nMau liat lagi kapan aja juga bisa!',
-                      ),
-                      const SizedBox(height: 48),
-                    ],
-                  ),
-                ),
+              const SizedBox(height: 16),
+              _buildCard(
+                0,
+                '🍽️',
+                'Laper Tapi Bingung?',
+                'Tenang aja! FoodMind bantuin kamu nemuin makanan yang pas banget buat mood hari ini.',
               ),
+              const SizedBox(height: 12),
+              _buildCard(
+                1,
+                '🧠',
+                'AI yang Ngerti Kamu',
+                'Powered by OpenAI yang cerdas dan bisa analisa preferensi & budget kamu dengan akurat.',
+              ),
+              const SizedBox(height: 12),
+              _buildCard(
+                2,
+                '💾',
+                'Auto Save Riwayat',
+                'Semua rekomendasi otomatis kesimpen di HP kamu. Mau liat lagi kapan aja juga bisa!',
+              ),
+              const SizedBox(height: 20),
               SizedBox(
                 width: double.infinity,
                 child: ElevatedButton(
@@ -75,7 +66,7 @@ class _OnboardingPageState extends State<OnboardingPage>
                   },
                   style: ElevatedButton.styleFrom(
                     backgroundColor: AppTheme.primaryOrange,
-                    padding: const EdgeInsets.symmetric(vertical: 16),
+                    padding: const EdgeInsets.symmetric(vertical: 14),
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(12),
                     ),
@@ -86,6 +77,7 @@ class _OnboardingPageState extends State<OnboardingPage>
                   ),
                 ),
               ),
+              const SizedBox(height: 16),
             ],
           ),
         ),
@@ -125,14 +117,14 @@ class _OnboardingPageState extends State<OnboardingPage>
       child: FadeTransition(
         opacity: opacityAnimation,
         child: Container(
-          padding: const EdgeInsets.all(24),
+          padding: const EdgeInsets.all(16),
           decoration: BoxDecoration(
             color: AppTheme.lightGray,
-            borderRadius: BorderRadius.circular(16),
+            borderRadius: BorderRadius.circular(12),
             boxShadow: [
               BoxShadow(
                 color: Colors.black.withOpacity(0.05),
-                blurRadius: 8,
+                blurRadius: 6,
                 offset: const Offset(0, 2),
               ),
             ],
@@ -141,19 +133,15 @@ class _OnboardingPageState extends State<OnboardingPage>
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(
-                emoji,
-                style: const TextStyle(fontSize: 36),
-              ),
-              const SizedBox(height: 16),
-              Text(
                 title,
-                style: AppTheme.headingSmall,
+                style: AppTheme.headingSmall.copyWith(fontSize: 16),
               ),
-              const SizedBox(height: 8),
+              const SizedBox(height: 4),
               Text(
                 description,
-                style: AppTheme.bodyMedium,
+                style: AppTheme.bodyMedium.copyWith(fontSize: 12, height: 1.3),
                 maxLines: 3,
+                overflow: TextOverflow.ellipsis,
               ),
             ],
           ),

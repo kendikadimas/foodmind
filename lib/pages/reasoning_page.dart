@@ -202,45 +202,93 @@ class _ReasoningPageState extends State<ReasoningPage> {
   }
 
   Widget _buildErrorState(String error) {
+    // Deteksi apakah error adalah API key issue
+    final isApiKeyIssue = error.contains('403') || 
+                         error.contains('Forbidden') || 
+                         error.contains('API key') ||
+                         error.contains('dikonfigurasi');
+    
     return Center(
-      child: Padding(
+      child: SingleChildScrollView(
         padding: const EdgeInsets.all(24),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            const Icon(
-              Icons.error_outline,
+            Icon(
+              isApiKeyIssue ? Icons.vpn_key_off : Icons.error_outline,
               size: 64,
               color: AppTheme.primaryOrange,
             ),
             const SizedBox(height: 24),
             Text(
-              'Terjadi Kesalahan',
+              isApiKeyIssue ? '🔑 API Key Issue' : 'Terjadi Kesalahan',
               style: AppTheme.headingSmall,
               textAlign: TextAlign.center,
             ),
             const SizedBox(height: 12),
-            Text(
-              error,
-              style: AppTheme.bodyMedium,
-              textAlign: TextAlign.center,
-            ),
-            const SizedBox(height: 32),
-            ElevatedButton(
-              onPressed: () {
-                Navigator.pop(context);
-              },
-              style: ElevatedButton.styleFrom(
-                backgroundColor: AppTheme.primaryOrange,
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 32,
-                  vertical: 12,
+            Container(
+              padding: const EdgeInsets.all(16),
+              decoration: BoxDecoration(
+                color: AppTheme.primaryOrange.withOpacity(0.1),
+                borderRadius: BorderRadius.circular(12),
+                border: Border.all(
+                  color: AppTheme.primaryOrange.withOpacity(0.3),
                 ),
               ),
-              child: const Text(
-                'Kembali',
-                style: AppTheme.buttonText,
+              child: Text(
+                error,
+                style: AppTheme.bodySmall.copyWith(height: 1.5),
+                textAlign: TextAlign.left,
               ),
+            ),
+            const SizedBox(height: 32),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                ElevatedButton(
+                  onPressed: () {
+                    Navigator.pop(context);
+                  },
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: AppTheme.mediumGray,
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 24,
+                      vertical: 12,
+                    ),
+                  ),
+                  child: const Text(
+                    'Kembali',
+                    style: AppTheme.buttonText,
+                  ),
+                ),
+                if (isApiKeyIssue) ...[
+                  const SizedBox(width: 12),
+                  ElevatedButton.icon(
+                    onPressed: () {
+                      // Open browser to get API key (optional)
+                      // launch('https://aistudio.google.com/apikey');
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        const SnackBar(
+                          content: Text(
+                            'Buka https://aistudio.google.com/apikey di browser\n'
+                            'Lalu update dart-defines.json',
+                          ),
+                          duration: Duration(seconds: 5),
+                        ),
+                      );
+                    },
+                    icon: const Icon(Icons.open_in_browser, size: 20),
+                    label: const Text('Get API Key'),
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: AppTheme.primaryOrange,
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 20,
+                        vertical: 12,
+                      ),
+                    ),
+                  ),
+                ],
+              ],
             ),
           ],
         ),

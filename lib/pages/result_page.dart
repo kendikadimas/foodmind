@@ -190,7 +190,7 @@ class _ResultPageState extends State<ResultPage> {
           backgroundColor: AppTheme.white,
           elevation: 0,
           foregroundColor: AppTheme.black,
-          automaticallyImplyLeading: false,
+          automaticallyImplyLeading: true,
           actions: [
             IconButton(
               onPressed: isRefreshing ? null : _refreshRecommendation,

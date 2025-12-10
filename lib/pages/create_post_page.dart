@@ -40,10 +40,16 @@ class _CreatePostPageState extends State<CreatePostPage> {
   }
 
   Future<void> _loadUserProfile() async {
+    print('🔍 Loading user profile from Hive...');
     final box = await Hive.openBox<UserProfile>('userProfile');
+    print('📦 Hive box opened. Items count: ${box.length}');
+    
     if (box.isNotEmpty) {
+      final user = box.getAt(0);
+      print('✅ User loaded: ${user?.name} (${user?.email})');
+      
       setState(() {
-        currentUser = box.getAt(0);
+        currentUser = user;
         // Pre-fill with user's existing preferences
         if (currentUser!.allergies.isNotEmpty) {
           selectedAllergies = currentUser!.allergies.toSet();
@@ -55,6 +61,8 @@ class _CreatePostPageState extends State<CreatePostPage> {
           _budgetController.text = currentUser!.dailyBudget!.toInt().toString();
         }
       });
+    } else {
+      print('❌ Hive box is empty - user not logged in');
     }
   }
 
@@ -67,7 +75,7 @@ class _CreatePostPageState extends State<CreatePostPage> {
 
     try {
       final post = CommunityPost(
-        id: DateTime.now().millisecondsSinceEpoch.toString(),
+        id: '0', // Temporary, will be replaced by Supabase auto-generated id
         authorName: currentUser!.name ?? '',
         authorEmail: currentUser!.email ?? '',
         content: _contentController.text.trim(),
@@ -83,7 +91,7 @@ class _CreatePostPageState extends State<CreatePostPage> {
         createdAt: DateTime.now(),
       );
 
-      // Save to Firestore
+      // Save to Supabase
       await _postDb.createPost(post);
 
       if (mounted) {
@@ -111,6 +119,7 @@ class _CreatePostPageState extends State<CreatePostPage> {
 
   @override
   Widget build(BuildContext context) {
+    // If user not logged in after loading, show error
     if (currentUser == null) {
       return Scaffold(
         appBar: AppBar(
@@ -118,8 +127,49 @@ class _CreatePostPageState extends State<CreatePostPage> {
           backgroundColor: AppTheme.white,
           elevation: 0,
         ),
-        body: const Center(
-          child: CircularProgressIndicator(),
+        body: Center(
+          child: Padding(
+            padding: const EdgeInsets.all(24),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                const Icon(
+                  Icons.lock_outline,
+                  size: 64,
+                  color: AppTheme.primaryOrange,
+                ),
+                const SizedBox(height: 16),
+                const Text(
+                  'Belum Login',
+                  style: AppTheme.headingMedium,
+                ),
+                const SizedBox(height: 8),
+                const Text(
+                  'Silakan login terlebih dahulu untuk membuat post',
+                  style: AppTheme.bodyMedium,
+                  textAlign: TextAlign.center,
+                ),
+                const SizedBox(height: 24),
+                ElevatedButton(
+                  onPressed: () {
+                    Navigator.pop(context);
+                    Navigator.pushNamed(context, '/login');
+                  },
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: AppTheme.primaryOrange,
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 32,
+                      vertical: 16,
+                    ),
+                  ),
+                  child: const Text(
+                    'Login Sekarang',
+                    style: AppTheme.buttonText,
+                  ),
+                ),
+              ],
+            ),
+          ),
         ),
       );
     }

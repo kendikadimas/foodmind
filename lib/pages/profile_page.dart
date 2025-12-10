@@ -74,7 +74,7 @@ class _ProfilePageState extends State<ProfilePage> {
         dailyBudget: double.tryParse(_budgetController.text.trim()),
         allergies: selectedAllergies,
         medicalConditions: selectedMedicalConditions,
-        isPremium: currentUser?.isPremium ?? false,
+        isPremium: false, // Premium feature removed
       );
 
       try {
@@ -443,68 +443,6 @@ class _ProfilePageState extends State<ProfilePage> {
                 ),
               ),
               
-              const SizedBox(height: 24),
-              
-              // Premium Status
-              if (isLoggedIn)
-                Container(
-                  width: double.infinity,
-                  padding: const EdgeInsets.all(16),
-                  decoration: BoxDecoration(
-                    color: currentUser?.isPremium == true 
-                        ? AppTheme.primaryOrange.withOpacity(0.1)
-                        : AppTheme.lightGray,
-                    borderRadius: BorderRadius.circular(12),
-                    border: Border.all(
-                      color: currentUser?.isPremium == true 
-                          ? AppTheme.primaryOrange
-                          : AppTheme.mediumGray,
-                    ),
-                  ),
-                  child: Column(
-                    children: [
-                      Icon(
-                        currentUser?.isPremium == true ? Icons.star : Icons.star_border,
-                        color: currentUser?.isPremium == true 
-                            ? AppTheme.primaryOrange
-                            : AppTheme.mediumGray,
-                        size: 32,
-                      ),
-                      const SizedBox(height: 8),
-                      Text(
-                        currentUser?.isPremium == true ? 'Premium User' : 'Free User',
-                        style: AppTheme.headingSmall,
-                      ),
-                      if (currentUser?.isPremium != true)
-                        Column(
-                          children: [
-                            const SizedBox(height: 8),
-                            Text(
-                              'Member ${currentUser?.isPremium == true ? 'Premium' : 'Gratis'}',
-                              style: AppTheme.bodySmall,
-                            ),
-                            const SizedBox(height: 12),
-                            OutlinedButton(
-                              onPressed: () {
-                                // TODO: Implement premium upgrade
-                                ScaffoldMessenger.of(context).showSnackBar(
-                                  const SnackBar(
-                                    content: Text('Fitur upgrade premium coming soon!'),
-                                  ),
-                                );
-                              },
-                              style: OutlinedButton.styleFrom(
-                                foregroundColor: AppTheme.primaryOrange,
-                                side: const BorderSide(color: AppTheme.primaryOrange),
-                              ),
-                              child: const Text('Upgrade ke Premium'),
-                            ),
-                          ],
-                        ),
-                    ],
-                  ),
-                ),
-
               const SizedBox(height: 32),
 
               // History Section

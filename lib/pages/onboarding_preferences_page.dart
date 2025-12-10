@@ -192,7 +192,7 @@ class _OnboardingPreferencesPageState extends State<OnboardingPreferencesPage> {
   }
 
   Widget _buildWelcomePage() {
-    return Padding(
+    return SingleChildScrollView(
       padding: const EdgeInsets.all(24),
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
@@ -263,7 +263,7 @@ class _OnboardingPreferencesPageState extends State<OnboardingPreferencesPage> {
   }
 
   Widget _buildBudgetPage() {
-    return Padding(
+    return SingleChildScrollView(
       padding: const EdgeInsets.all(24),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -340,7 +340,7 @@ class _OnboardingPreferencesPageState extends State<OnboardingPreferencesPage> {
   }
 
   Widget _buildHealthPage() {
-    return Padding(
+    return SingleChildScrollView(
       padding: const EdgeInsets.all(24),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,

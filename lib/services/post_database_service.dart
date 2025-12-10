@@ -15,6 +15,13 @@ class PostDatabaseService {
     }
 
     try {
+      print('📤 Creating post to Supabase...');
+      print('   User ID: $currentUserId');
+      final contentPreview = post.content.length > 50 
+          ? '${post.content.substring(0, 50)}...' 
+          : post.content;
+      print('   Content: $contentPreview');
+      
       final response = await _supabase.client.from('posts').insert({
         'user_id': currentUserId,
         'author_name': post.authorName,
@@ -40,7 +47,9 @@ class PostDatabaseService {
         'created_at': post.createdAt.toIso8601String(),
       }).select('id').single();
 
-      return response['id'].toString();
+      final postId = response['id'].toString();
+      print('✅ Post created with ID: $postId');
+      return postId;
     } catch (e) {
       throw 'Gagal membuat post: $e';
     }
@@ -222,7 +231,7 @@ class PostDatabaseService {
       likedBy: List<String>.from(data['liked_by'] ?? []),
       responses: (data['responses'] as List<dynamic>?)?.map((r) {
         return PostResponse(
-          id: r['id'] as String,
+          id: r['id'].toString(), // Convert to String for consistency
           authorName: r['author_name'] as String,
           authorEmail: r['author_email'] as String,
           content: r['content'] as String,

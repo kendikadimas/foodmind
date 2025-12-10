@@ -260,13 +260,33 @@ class _LoginPageState extends State<LoginPage> {
                     prefixIcon: const Icon(Icons.email_outlined),
                   ),
                   keyboardType: TextInputType.emailAddress,
+                  autocorrect: false,
+                  textInputAction: TextInputAction.next,
                   validator: (value) {
                     if (value == null || value.trim().isEmpty) {
                       return 'Email tidak boleh kosong';
                     }
-                    if (!value.contains('@') || !value.contains('.')) {
-                      return 'Format email tidak valid';
+                    
+                    final trimmedEmail = value.trim().toLowerCase();
+                    
+                    // Regex untuk validasi email yang lebih ketat
+                    final emailRegex = RegExp(
+                      r'^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$'
+                    );
+                    
+                    if (!emailRegex.hasMatch(trimmedEmail)) {
+                      return 'Format email tidak valid\nContoh: nama@email.com';
                     }
+                    
+                    // Cek panjang email
+                    if (trimmedEmail.length < 5) {
+                      return 'Email terlalu pendek';
+                    }
+                    
+                    if (trimmedEmail.length > 100) {
+                      return 'Email terlalu panjang';
+                    }
+                    
                     return null;
                   },
                 ),

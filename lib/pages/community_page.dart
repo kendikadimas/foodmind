@@ -29,17 +29,22 @@ class _CommunityPageState extends State<CommunityPage> {
 
   Future<void> _initializeData() async {
     try {
+      print('🔍 Initializing community page...');
       userBox = await Hive.openBox<UserProfile>('userProfile');
+      print('📦 Hive box opened. Items count: ${userBox!.length}');
       
       if (userBox!.isNotEmpty) {
         currentUser = userBox!.getAt(0);
+        print('✅ Current user loaded: ${currentUser?.name} (${currentUser?.email})');
+      } else {
+        print('❌ No user found in Hive box');
       }
       
       setState(() {
         isLoading = false;
       });
     } catch (e) {
-      print('Error initializing community data: $e');
+      print('❌ Error initializing community data: $e');
       setState(() {
         isLoading = false;
       });
@@ -143,7 +148,7 @@ class _CommunityPageState extends State<CommunityPage> {
               itemBuilder: (context, index) {
                 final postData = posts[index];
                 final post = _postDb.postFromSupabase(postData);
-                return _buildPostCard(post, postData['id']);
+                return _buildPostCard(post, postData['id'].toString());
               },
             ),
           );
@@ -388,11 +393,14 @@ class _CommunityPageState extends State<CommunityPage> {
       return;
     }
 
+    // Toggle like locally for instant UI feedback
     setState(() {
       if (currentUser!.email != null) {
         post.toggleLike(currentUser!.email!);
       }
-      post.save(); // Save to Hive
     });
+    
+    // Note: Like is only stored locally
+    // To persist to Supabase, need to implement updatePost API call
   }
 }

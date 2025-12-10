@@ -51,11 +51,15 @@ class RateLimiter {
 
 /// Service untuk AI Food Recommendation dengan rate limiting
 class OpenAIService {
-  // ⚠️ PENTING: Ganti API key Anda dari https://ai.google.dev/
-  // 1. Buka https://ai.google.dev/
-  // 2. Klik "Get API Key" → "Create API key"
+  // ⚠️ PENTING: Ganti API key Anda dari https://aistudio.google.com/apikey
+  // 1. Buka https://aistudio.google.com/apikey
+  // 2. Klik "Create API key" 
   // 3. Copy API key dan paste di bawah ini
-  static const String geminiApiKey = 'AIzaSyCVIw79wyi8_iNKvc3s0ofMBdNqy8Kd8cE'; // 👈 GANTI DENGAN API KEY ANDA
+  // 4. ATAU gunakan environment variable GEMINI_API_KEY
+  static const String geminiApiKey = String.fromEnvironment(
+    'GEMINI_API_KEY',
+    defaultValue: '', // 👈 KOSONGKAN - Harus diisi via environment variable atau ganti manual
+  );
 
   // ✅ SERVICE API KEY dari Foursquare (untuk Places API baru)
   static const String foursquareApiKey = 'LVPO2Z2IJKELQ44BTJTZHP5PYETLDMDML44MQDS5KPO0CMKT';
@@ -129,6 +133,21 @@ class OpenAIService {
     String likes = '',
     bool useCache = true,
   }) async {
+    // Validasi API key terlebih dahulu
+    if (geminiApiKey.isEmpty) {
+      return {
+        'success': false,
+        'error': 'Gemini API key belum dikonfigurasi!\n\n'
+            'Silakan ikuti langkah berikut:\n'
+            '1. Buka https://aistudio.google.com/apikey\n'
+            '2. Create API key baru\n'
+            '3. Update di dart-defines.json\n'
+            '4. Restart aplikasi\n\n'
+            'Lihat GEMINI_API_SETUP.md untuk panduan lengkap.',
+        'missingApiKey': true,
+      };
+    }
+
     // Dapatkan daftar makanan yang harus dihindari
     final frequentFoods = await _getFrequentlyEatenFoods();
     final cacheKey = _generateCacheKey(taste, style, weather, position, allergies, likes, frequentFoods);
@@ -418,6 +437,19 @@ Jawab HANYA dengan JSON.''';
         final jsonResponse = jsonDecode(cleanedText);
         
         return {'success': true, 'data': jsonResponse};
+      } else if (response.statusCode == 403) {
+        return {
+          'success': false,
+          'error': '🔒 API Key Tidak Valid (403 Forbidden)\n\n'
+              'API key Gemini Anda expired atau tidak memiliki akses.\n\n'
+              'Solusi:\n'
+              '1. Buka: https://aistudio.google.com/apikey\n'
+              '2. Create API key baru\n'
+              '3. Update di dart-defines.json\n'
+              '4. Restart aplikasi\n\n'
+              'Lihat file GEMINI_API_SETUP.md untuk panduan lengkap.',
+          'forbidden': true,
+        };
       } else if (response.statusCode == 429) {
         return {
           'success': false,
@@ -425,9 +457,10 @@ Jawab HANYA dengan JSON.''';
           'rateLimited': true,
         };
       } else {
+        final errorBody = response.body;
         return {
           'success': false,
-          'error': 'Gemini API error: ${response.statusCode}',
+          'error': 'Gemini API error: ${response.statusCode}\n$errorBody',
         };
       }
     } catch (e) {
