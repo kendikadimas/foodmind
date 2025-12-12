@@ -2,21 +2,15 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../theme.dart';
+import '../features/home/view_models/home_view_model.dart';
 
 class HomePage extends ConsumerWidget {
   const HomePage({super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final hour = DateTime.now().hour;
-    String greeting = 'Selamat Pagi';
-    if (hour >= 12 && hour < 15) {
-      greeting = 'Selamat Siang';
-    } else if (hour >= 15 && hour < 18) {
-      greeting = 'Selamat Sore';
-    } else if (hour >= 18 || hour < 4) {
-      greeting = 'Selamat Malam';
-    }
+    // Watch the ViewModel to get greeting state
+    final homeState = ref.watch(homeViewModelProvider);
 
     return Scaffold(
       backgroundColor: AppTheme.white,
@@ -45,7 +39,7 @@ class HomePage extends ConsumerWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    greeting,
+                    '${homeState.greeting} ${homeState.greetingEmoji}',
                     style: GoogleFonts.poppins(
                       fontSize: 16,
                       color: AppTheme.white.withOpacity(0.9),
@@ -63,7 +57,7 @@ class HomePage extends ConsumerWidget {
                   ),
                   const SizedBox(height: 12),
                   Text(
-                    'Tenang, kita bantuin kamu nemuin makanan yang pas banget buat hari ini!',
+                    homeState.motivationalText,
                     style: GoogleFonts.poppins(
                       fontSize: 14,
                       color: AppTheme.white.withOpacity(0.95),
